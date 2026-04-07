@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>คู่มือออกแบบระบบรายงานการมาปฏิบัติราชการ สคร.9</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Sarabun', 'Segoe UI', sans-serif; background: #f0f4f8; color: #2d3748; line-height: 1.8; }
+.container { max-width: 900px; margin: 0 auto; padding: 20px; }
+header { background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%); color: white; padding: 40px 30px; border-radius: 12px; margin-bottom: 30px; text-align: center; }
+header h1 { font-size: 1.8em; margin-bottom: 8px; }
+header p { opacity: 0.9; font-size: 1.1em; }
+.section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.section h2 { color: #1a365d; font-size: 1.4em; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 3px solid #3182ce; }
+.section h3 { color: #2b6cb0; font-size: 1.15em; margin: 18px 0 10px; }
+.highlight { background: #ebf8ff; border-left: 4px solid #3182ce; padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+.warning { background: #fffbeb; border-left: 4px solid #d69e2e; padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+.success { background: #f0fff4; border-left: 4px solid #38a169; padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.95em; }
+th { background: #1a365d; color: white; padding: 12px 16px; text-align: left; }
+td { padding: 10px 16px; border-bottom: 1px solid #e2e8f0; }
+tr:hover td { background: #f7fafc; }
+code { background: #edf2f7; padding: 2px 8px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.9em; color: #e53e3e; }
+.diagram { background: #1a202c; color: #63b3ed; padding: 24px; border-radius: 8px; font-family: 'Courier New', monospace; white-space: pre; overflow-x: auto; line-height: 1.6; margin: 16px 0; font-size: 0.85em; }
+.step-num { display: inline-block; background: #3182ce; color: white; width: 28px; height: 28px; text-align: center; line-height: 28px; border-radius: 50%; font-weight: bold; margin-right: 8px; font-size: 0.9em; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.85em; font-weight: 600; }
+.badge-blue { background: #bee3f8; color: #2b6cb0; }
+.badge-green { background: #c6f6d5; color: #276749; }
+.badge-orange { background: #feebc8; color: #c05621; }
+.toc { background: #f7fafc; padding: 20px 24px; border-radius: 8px; margin: 16px 0; }
+.toc a { color: #2b6cb0; text-decoration: none; display: block; padding: 4px 0; }
+.toc a:hover { color: #1a365d; text-decoration: underline; }
+footer { text-align: center; padding: 20px; color: #718096; font-size: 0.9em; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+<h1>คู่มือออกแบบระบบรายงานการมาปฏิบัติราชการ</h1>
+<p>สำนักงานป้องกันควบคุมโรคที่ 9 นครราชสีมา (สคร.9)</p>
+<p style="opacity:0.7; font-size:0.9em;">เวอร์ชัน 1.0 | มีนาคม 2569</p>
+</header>
+
+<div class="section">
+<h2>สารบัญ</h2>
+<div class="toc">
+<a href="#overview">1. ภาพรวมระบบ</a>
+<a href="#current">2. สถานะปัจจุบันของข้อมูล</a>
+<a href="#architecture">3. สถาปัตยกรรมระบบที่แนะนำ</a>
+<a href="#data-flow">4. ขั้นตอนการนำเข้าข้อมูลรายเดือน</a>
+<a href="#codes">5. รหัสสถานะการปฏิบัติราชการ</a>
+<a href="#dashboard">6. Dashboard และรายงาน</a>
+<a href="#backup">7. แนวทางจัดการข้อมูลปีเก่า (แก้ปัญหาขนาดไฟล์)</a>
+<a href="#monthly-process">8. กระบวนการรายเดือน (Step-by-Step)</a>
+<a href="#future">9. แนวทางพัฒนาในอนาคต</a>
+</div>
+</div>
+
+<div class="section" id="overview">
+<h2>1. ภาพรวมระบบ</h2>
+<p>ระบบรายงานการมาปฏิบัติราชการ สคร.9 เป็นระบบที่ใช้ข้อมูลจากเครื่องสแกนลายนิ้วมือ นำมาประมวลผลและจัดทำรายงานเพื่อติดตามการมาปฏิบัติราชการของบุคลากร ครอบคลุม 25 กลุ่มงาน/หน่วยงานในสังกัด สคร.9</p>
+
+<div class="highlight">
+<strong>ข้อมูลปัจจุบัน:</strong> 325,217 รายการ จากบุคลากร 298 คน ครอบคลุมปีงบประมาณ 2564-2569
+</div>
+
+<h3>องค์ประกอบหลักของระบบ</h3>
+<div class="diagram">
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│   เครื่อง     │────▶│  Raw Data    │────▶│  Query Data  │────▶│  Dashboard   │
+│  สแกนนิ้ว    │     │  (สแกนดิบ)    │     │  (ผ่าน Query) │     │  (รายงาน)    │
+└──────────────┘     └──────────────┘     └──────────────┘     └──────────────┘
+                      Data Scan XXXX       imp_data_Q           HR Dashboard
+                      - ลำดับ              - ชื่อ-นามสกุล        - KPI Cards
+                      - รหัสเครื่อง         - Primary_ID         - กราฟรายเดือน
+                      - ชื่อ-นามสกุล        - year/month/day     - เปรียบเทียบ
+                      - วันที่              - ตัวย่อ (รหัส)        กลุ่มงาน
+                      - Rec1-Rec6                               - ตารางสรุป
+                                    ┌──────────────┐
+                                    │   imp_ref    │
+                                    │ (ฐานอ้างอิง)  │─── Mapping ชื่อ, กลุ่มงาน,
+                                    └──────────────┘    ประเภท (Gov/Scan/WFH)
+</div>
+</div>
+
+<div class="section" id="current">
+<h2>2. สถานะปัจจุบันของข้อมูล</h2>
+
+<h3>ไฟล์หลัก: Report Scan For User.xlsx</h3>
+<table>
+<tr><th>Sheet</th><th>หน้าที่</th><th>ขนาด</th></tr>
+<tr><td><code>Report_by dep(Q)</code></td><td>รายงานรายกลุ่มงาน/เดือน - แสดงปฏิทินการมาทำงานของแต่ละคน</td><td>~732 แถว</td></tr>
+<tr><td><code>Report_by person(Q)</code></td><td>รายงานรายบุคคล/ปีงบประมาณ - แสดงสถิติรายปีของแต่ละคน</td><td>~20 แถว/คน</td></tr>
+<tr><td><code>imp_data_Q</code></td><td>ฐานข้อมูลหลัก - ข้อมูลที่ผ่าน Query แล้ว (1 แถว = 1 คน/1 วัน)</td><td>~393,735 แถว</td></tr>
+<tr><td><code>imp_ref</code></td><td>ฐานอ้างอิง - Mapping ชื่อ กลุ่มงาน ประเภท และข้อมูลปฏิทิน</td><td>~11,002 แถว</td></tr>
+</table>
+
+<h3>ไฟล์สำรองปีเก่า</h3>
+<table>
+<tr><th>ไฟล์</th><th>ปีงบ</th><th>Sheets</th><th>ขนาด</th></tr>
+<tr><td>Data Scan 2564.xlsx</td><td>2564</td><td>Data2564, Query2564</td><td>8.9 MB</td></tr>
+<tr><td>Data Scan 2565.xlsx</td><td>2565</td><td>Data2565, Query2565</td><td>7.3 MB</td></tr>
+<tr><td>Data Scan 2566.xlsx</td><td>2566</td><td>Data2566, ชีต3, Ref</td><td>13 MB</td></tr>
+</table>
+
+<div class="warning">
+<strong>ปัญหาปัจจุบัน:</strong> Google Sheets มีขีดจำกัด 10 ล้าน cells ต่อไฟล์ ทำให้ต้อง Back Up ข้อมูลปีเก่าออกเป็นไฟล์แยก ทำให้ไม่สามารถดูข้อมูลข้ามปีได้สะดวก
+</div>
+</div>
+
+<div class="section" id="architecture">
+<h2>3. สถาปัตยกรรมระบบที่แนะนำ</h2>
+
+<h3>แนวทาง A: ใช้ Google Sheets + Dashboard HTML <span class="badge badge-green">แนะนำ</span></h3>
+<p>เหมาะสำหรับระบบปัจจุบันที่ใช้ Google Sheets อยู่แล้ว โดยเพิ่ม Dashboard HTML เข้ามา</p>
+
+<div class="diagram">
+  ┌─────────────────────────────────────────────────────────┐
+  │              Google Sheets (ไฟล์หลัก)                     │
+  │  ┌─────────┐  ┌──────────┐  ┌─────────┐  ┌──────────┐  │
+  │  │imp_data │  │ imp_ref  │  │Report   │  │Report    │  │
+  │  │_Q       │  │          │  │by dep   │  │by person │  │
+  │  └────┬────┘  └────┬─────┘  └─────────┘  └──────────┘  │
+  └───────┼────────────┼────────────────────────────────────┘
+          │            │
+          ▼            ▼
+  ┌───────────────────────────────────────┐
+  │     Export CSV/XLSX ทุกเดือน           │
+  │     (ทำอัตโนมัติหรือ Manual)            │
+  └───────────────────┬───────────────────┘
+                      │
+                      ▼
+  ┌───────────────────────────────────────┐
+  │     Python Script ประมวลผล             │
+  │     - รวมข้อมูลทุกปี                    │
+  │     - คำนวณ KPI                        │
+  │     - สร้าง Dashboard JSON             │
+  └───────────────────┬───────────────────┘
+                      │
+                      ▼
+  ┌───────────────────────────────────────┐
+  │     HR Dashboard (HTML)               │
+  │     - เปิดบนเบราว์เซอร์               │
+  │     - กรองตาม ปีงบ/กลุ่มงาน           │
+  │     - กราฟ Interactive                │
+  └───────────────────────────────────────┘
+</div>
+
+<h3>แนวทาง B: ใช้ Google Sheets + Apps Script <span class="badge badge-blue">อัตโนมัติเต็มรูปแบบ</span></h3>
+<p>ใช้ Google Apps Script ทำงานอัตโนมัติ ดึงข้อมูลจาก Sheets แล้วอัปเดต Dashboard โดยไม่ต้อง Export มือ</p>
+
+<div class="diagram">
+  ┌────────────────────┐    Trigger     ┌────────────────────┐
+  │   Google Sheets    │───────────────▶│  Google Apps Script │
+  │   (ข้อมูลหลัก)      │   ทุกเดือน     │  - อ่านข้อมูล        │
+  └────────────────────┘    อัตโนมัติ     │  - ประมวลผล KPI     │
+                                        │  - อัปเดต Dashboard  │
+  ┌────────────────────┐                └─────────┬──────────┘
+  │  Google Sheets     │                          │
+  │  (Back Up ปีเก่า)   │──────────────────────────┘
+  └────────────────────┘       อ่านข้อมูลข้ามไฟล์
+</div>
+
+<h3>แนวทาง C: ย้ายไป Database จริง <span class="badge badge-orange">ระยะยาว</span></h3>
+<p>หากข้อมูลเติบโตมากขึ้น สามารถย้ายไปใช้ Database เช่น SQLite, PostgreSQL หรือ Google BigQuery</p>
+</div>
+
+<div class="section" id="data-flow">
+<h2>4. ขั้นตอนการนำเข้าข้อมูลรายเดือน</h2>
+
+<h3>ขั้นตอนที่ 1: เตรียมข้อมูลดิบ</h3>
+<p><span class="step-num">1</span> Export ข้อมูลสแกนจากเครื่องสแกนลายนิ้วมือ (Raw Scan Data) ของเดือนที่ต้องการ</p>
+<p><span class="step-num">2</span> ข้อมูลดิบประกอบด้วย: ลำดับ, รหัสเครื่อง, ชื่อ-นามสกุล, วันที่, Rec1-Rec6 (เวลาสแกนแต่ละครั้ง)</p>
+
+<h3>ขั้นตอนที่ 2: Query และจัดรูปแบบ</h3>
+<p><span class="step-num">3</span> ใช้สูตร/Query ใน Google Sheets เพื่อแปลงข้อมูลดิบเป็นรูปแบบ:</p>
+<table>
+<tr><th>คอลัมน์</th><th>ตัวอย่าง</th><th>คำอธิบาย</th></tr>
+<tr><td>ชื่อ-นามสกุล</td><td>นางสาววิจิตรา สุริวินิจ</td><td>ชื่อจากเครื่องสแกน</td></tr>
+<tr><td>Primary_ID</td><td>106</td><td>รหัสประจำตัว</td></tr>
+<tr><td>year</td><td>2568</td><td>ปี พ.ศ.</td></tr>
+<tr><td>month</td><td>พฤศจิกายน</td><td>เดือน (ภาษาไทย)</td></tr>
+<tr><td>day</td><td>15</td><td>วันที่</td></tr>
+<tr><td>ตัวย่อ</td><td>O</td><td>รหัสสถานะ</td></tr>
+</table>
+
+<h3>ขั้นตอนที่ 3: นำเข้าข้อมูล</h3>
+<p><span class="step-num">4</span> นำข้อมูลที่ Query แล้วไปเพิ่มต่อท้ายใน sheet <code>imp_data_Q</code></p>
+<p><span class="step-num">5</span> ตรวจสอบว่า <code>imp_ref</code> มีรายชื่อบุคลากรใหม่ครบถ้วน (ถ้ามีคนใหม่ให้เพิ่มใน imp_ref)</p>
+
+<h3>ขั้นตอนที่ 4: อัปเดต Dashboard</h3>
+<p><span class="step-num">6</span> ดาวน์โหลดไฟล์ Report Scan For User เป็น .xlsx</p>
+<p><span class="step-num">7</span> อัปโหลดให้ Claude ประมวลผลและสร้าง Dashboard ใหม่</p>
+
+<div class="success">
+<strong>ทางเลือก: อัตโนมัติด้วย Claude Scheduled Task</strong><br>
+สามารถตั้ง Scheduled Task ใน Claude ให้ทำการดึงข้อมูลและอัปเดต Dashboard อัตโนมัติทุกเดือนได้ (ต้องอัปโหลดไฟล์ใหม่เข้ามาเท่านั้น)
+</div>
+</div>
+
+<div class="section" id="codes">
+<h2>5. รหัสสถานะการปฏิบัติราชการ</h2>
+
+<h3>กลุ่มมาทำงาน</h3>
+<table>
+<tr><th>รหัส</th><th>ความหมาย</th><th>จำนวน (รวมทุกปี)</th><th>นับเป็น</th></tr>
+<tr><td><code>O</code></td><td>มาทำงานปกติ (8.30-16.30)</td><td>126,872</td><td>วันทำงาน</td></tr>
+<tr><td><code>WH</code></td><td>Work From Home</td><td>967</td><td>วันทำงาน</td></tr>
+</table>
+
+<h3>กลุ่มมาแต่มีปัญหา</h3>
+<table>
+<tr><th>รหัส</th><th>ความหมาย</th><th>จำนวน</th><th>นับเป็น</th></tr>
+<tr><td><code>ส</code></td><td>สาย</td><td>4,314</td><td>สาย</td></tr>
+<tr><td><code>อก</code></td><td>ออกก่อน</td><td>1,026</td><td>ออกก่อน</td></tr>
+<tr><td><code>มข</code></td><td>ไม่สแกนเข้า</td><td>2,373</td><td>ไม่สแกน</td></tr>
+<tr><td><code>มอ</code></td><td>ไม่สแกนออก</td><td>4,670</td><td>ไม่สแกน</td></tr>
+<tr><td><code>ส-อก</code></td><td>สาย + ออกก่อน</td><td>488</td><td>สาย</td></tr>
+<tr><td><code>ส-มอ</code></td><td>สาย + ไม่สแกนออก</td><td>280</td><td>สาย</td></tr>
+<tr><td><code>มข-อก</code></td><td>ไม่สแกนเข้า + ออกก่อน</td><td>280</td><td>ไม่สแกน</td></tr>
+</table>
+
+<h3>กลุ่มลา</h3>
+<table>
+<tr><th>รหัส</th><th>ความหมาย</th><th>จำนวน</th></tr>
+<tr><td><code>ลพ</code></td><td>ลาพักผ่อน</td><td>4,313</td></tr>
+<tr><td><code>ลป</code></td><td>ลาป่วย</td><td>3,663</td></tr>
+<tr><td><code>ลก</code></td><td>ลากิจ</td><td>599</td></tr>
+<tr><td><code>ลค</code></td><td>ลาคลอด</td><td>478</td></tr>
+<tr><td><code>ลศ</code></td><td>ลาศึกษาต่อ</td><td>1,237</td></tr>
+</table>
+
+<h3>กลุ่มวันหยุด / ไม่ทำงาน</h3>
+<table>
+<tr><th>รหัส</th><th>ความหมาย</th><th>จำนวน</th><th>หมายเหตุ</th></tr>
+<tr><td><code>สร์</code></td><td>วันเสาร์</td><td>46,390</td><td>ไม่นับเป็นวันทำงาน</td></tr>
+<tr><td><code>อา</code></td><td>วันอาทิตย์</td><td>46,369</td><td>ไม่นับเป็นวันทำงาน</td></tr>
+<tr><td><code>รก</code></td><td>วันหยุดราชการ</td><td>28,950</td><td>ไม่นับเป็นวันทำงาน</td></tr>
+<tr><td><code>นฤ</code></td><td>วันนักขัตฤกษ์</td><td>18,920</td><td>ไม่นับเป็นวันทำงาน</td></tr>
+<tr><td><code>ข</code></td><td>ขาดงาน</td><td>31,909</td><td>นับเป็นวันขาด</td></tr>
+<tr><td><code>กต</code></td><td>กักตัว (COVID)</td><td>266</td><td>ช่วง COVID-19</td></tr>
+</table>
+</div>
+
+<div class="section" id="dashboard">
+<h2>6. Dashboard และรายงาน</h2>
+
+<h3>ไฟล์ที่จัดส่ง</h3>
+<table>
+<tr><th>ไฟล์</th><th>รายละเอียด</th></tr>
+<tr><td><code>HR_Dashboard_สคร9.html</code></td><td>Dashboard หลัก - เปิดในเบราว์เซอร์ มีกราฟ Interactive กรองตามปีงบ/กลุ่มงานได้</td></tr>
+<tr><td><code>System_Design_คู่มือระบบ.html</code></td><td>เอกสารนี้ - คู่มือออกแบบระบบและกระบวนการทำงาน</td></tr>
+</table>
+
+<h3>ฟีเจอร์ของ Dashboard</h3>
+<p><strong>ตัวกรอง:</strong> ปีงบประมาณ (2564-2569) และ กลุ่มงาน (25 กลุ่ม หรือ ทุกกลุ่มงาน)</p>
+<p><strong>KPI Cards 5 ตัว:</strong></p>
+<p style="padding-left:20px;">- จำนวนบุคลากร (นับจากข้อมูลจริง)<br>
+- อัตราการมาทำงาน (% ของ O+WH จากวันทำงานทั้งหมด)<br>
+- อัตราการลา (% ของ ลพ+ลป+ลก+ลค+ลศ จากวันทำงาน)<br>
+- อัตราการขาดงาน (% ของ ข จากวันทำงาน)<br>
+- อัตราการสาย (% ของ ส+ส-อก+ส-มอ จากวันทำงาน)</p>
+
+<p><strong>กราฟ 4 ชุด:</strong></p>
+<p style="padding-left:20px;">- กราฟแท่ง: สถิติรายเดือน (มา/ขาด/สาย/ลา)<br>
+- กราฟโดนัท: สัดส่วนประเภทการลา<br>
+- กราฟเส้น: แนวโน้มอัตราการมาทำงานรายเดือน<br>
+- กราฟแท่งแนวนอน: เปรียบเทียบรายกลุ่มงาน</p>
+</div>
+
+<div class="section" id="backup">
+<h2>7. แนวทางจัดการข้อมูลปีเก่า (แก้ปัญหาขนาดไฟล์)</h2>
+
+<div class="warning">
+<strong>ปัญหา:</strong> Google Sheets จำกัดที่ 10 ล้าน cells ข้อมูลสะสมหลายปีทำให้เกินขีดจำกัด ต้องแยกไฟล์ทำให้ดูภาพรวมข้ามปีลำบาก
+</div>
+
+<h3>แนวทางแก้ไข</h3>
+
+<p><strong>A. เก็บเฉพาะ 2 ปีล่าสุดใน Google Sheets</strong></p>
+<p style="padding-left:20px;">- Google Sheets เก็บแค่ปีงบปัจจุบัน + ปีก่อน (สำหรับ Report หน้า Sheets ปกติ)<br>
+- ข้อมูลปีเก่ากว่านั้น Back Up เป็น .xlsx แยกไฟล์ตามปีงบ<br>
+- Dashboard HTML รวมข้อมูลทุกปีได้ เพราะ embed JSON ไว้ในไฟล์เดียว</p>
+
+<p><strong>B. ใช้ Dashboard เป็นศูนย์กลางข้อมูลข้ามปี</strong></p>
+<p style="padding-left:20px;">- ทุกครั้งที่อัปเดต Dashboard ให้รวมข้อมูลจากทุกปี<br>
+- Dashboard จะเป็นที่เดียวที่ดูข้อมูลย้อนหลังได้ครบทุกปี<br>
+- ไฟล์ HTML เก็บข้อมูลได้ไม่จำกัด (ไม่มีปัญหา cell limit)</p>
+
+<p><strong>C. กระบวนการ Back Up ข้อมูล</strong></p>
+<div class="diagram">
+เมื่อจบปีงบประมาณ (เดือนกันยายน):
+
+1. Export ข้อมูลปีที่เก่ากว่า 2 ปี ออกจาก imp_data_Q
+2. บันทึกเป็น "Data Scan XXXX.xlsx" (XXXX = ปีงบ)
+3. เก็บทั้ง Raw Data และ Query Data ไว้ในไฟล์เดียวกัน
+4. ลบข้อมูลเก่าออกจาก Google Sheets (เพื่อลดขนาด)
+5. อัปเดต Dashboard ให้รวมข้อมูลทุกปี
+
+ตัวอย่าง โครงสร้างไฟล์:
+├── Google Sheets (Online)
+│   └── Report Scan For User
+│       ├── imp_data_Q (ปีงบ 2568-2569)
+│       ├── imp_ref
+│       ├── Report_by dep(Q)
+│       └── Report_by person(Q)
+│
+├── Google Drive (Back Up)
+│   ├── Data Scan 2564.xlsx
+│   ├── Data Scan 2565.xlsx
+│   ├── Data Scan 2566.xlsx
+│   └── Data Scan 2567.xlsx
+│
+└── Dashboard (Local/Shared)
+    └── HR_Dashboard_สคร9.html (รวมทุกปี 2564-2569)
+</div>
+</div>
+
+<div class="section" id="monthly-process">
+<h2>8. กระบวนการรายเดือน (Step-by-Step)</h2>
+
+<h3>ทุกต้นเดือน (ภายในวันที่ 5)</h3>
+
+<p><span class="step-num">1</span> <strong>Export ข้อมูลสแกน</strong> — ดึงข้อมูลดิบจากเครื่องสแกนลายนิ้วมือของเดือนที่ผ่านมา</p>
+
+<p><span class="step-num">2</span> <strong>นำเข้าข้อมูลดิบ</strong> — วางข้อมูลในไฟล์ Data Scan ปีปัจจุบัน (Sheet: DataXXXX)</p>
+
+<p><span class="step-num">3</span> <strong>รัน Query</strong> — ใช้ Query/สูตร เพื่อแปลงข้อมูลดิบเป็นรูปแบบมาตรฐาน (ชื่อ, PID, year, month, day, รหัสสถานะ)</p>
+
+<p><span class="step-num">4</span> <strong>นำเข้า imp_data_Q</strong> — Copy ผลลัพธ์จาก Query ไปต่อท้ายใน imp_data_Q ของ Google Sheets หลัก</p>
+
+<p><span class="step-num">5</span> <strong>ตรวจสอบ imp_ref</strong> — เช็คว่ามีบุคลากรใหม่หรือไม่ ถ้ามีให้เพิ่มใน imp_ref พร้อมระบุกลุ่มงาน</p>
+
+<p><span class="step-num">6</span> <strong>อัปเดต Dashboard</strong> — ดาวน์โหลด Report Scan For User เป็น .xlsx แล้วอัปโหลดให้ Claude สร้าง Dashboard ใหม่</p>
+
+<p><span class="step-num">7</span> <strong>ตรวจสอบรายงาน</strong> — เปิด Dashboard ตรวจสอบความถูกต้อง เปรียบเทียบกับ Report_by dep(Q) ใน Sheets</p>
+
+<h3>ทุกสิ้นปีงบประมาณ (กันยายน)</h3>
+<p><span class="step-num">A</span> Back Up ข้อมูลปีเก่า (ถ้าเกิน 2 ปีใน Sheets)<br>
+<span class="step-num">B</span> สร้าง Dashboard สรุปประจำปี<br>
+<span class="step-num">C</span> ทำความสะอาด imp_data_Q (ลบข้อมูลเก่าที่ Back Up แล้ว)</p>
+</div>
+
+<div class="section" id="future">
+<h2>9. แนวทางพัฒนาในอนาคต</h2>
+
+<h3>ระยะสั้น (สามารถทำได้ทันที)</h3>
+<p>- ใช้ Claude Scheduled Task ตั้งเตือนทุกต้นเดือนให้อัปเดตข้อมูล<br>
+- เพิ่มการ Export Dashboard เป็น PDF สำหรับรายงานผู้บริหาร<br>
+- เพิ่มตาราง Top 10 บุคลากรที่ขาด/สาย มากที่สุด</p>
+
+<h3>ระยะกลาง (1-3 เดือน)</h3>
+<p>- ใช้ Google Apps Script อัตโนมัติการ Query ข้อมูลดิบ<br>
+- เพิ่ม Dashboard แยกสำหรับข้อมูล WFH<br>
+- เพิ่มการแจ้งเตือนทาง Email เมื่อมีบุคลากรขาดงานติดต่อกัน</p>
+
+<h3>ระยะยาว (6-12 เดือน)</h3>
+<p>- ย้ายฐานข้อมูลไป SQLite/PostgreSQL เพื่อรองรับข้อมูลไม่จำกัด<br>
+- สร้าง Web Application สำหรับนำเข้าข้อมูลอัตโนมัติ<br>
+- เพิ่ม Machine Learning สำหรับ Predict แนวโน้มการลา/ขาด</p>
+
+<div class="success">
+<strong>สรุป:</strong> ระบบนี้ออกแบบให้ใช้งานง่าย ไม่ต้องติดตั้งซอฟต์แวร์เพิ่ม Dashboard เปิดในเบราว์เซอร์ได้ทันที และสามารถอัปเดตข้อมูลได้ทุกเดือนผ่าน Claude โดยแค่อัปโหลดไฟล์ .xlsx เข้ามา
+</div>
+</div>
+
+<footer>
+<p>เอกสารออกแบบระบบ v1.0 | สร้างโดย Claude AI | มีนาคม 2569</p>
+<p>สำนักงานป้องกันควบคุมโรคที่ 9 นครราชสีมา</p>
+</footer>
+
+</div>
+</body>
+</html>
